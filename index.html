@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<body>
+  <form id="contact-form">
+    <input type="text" name="name" placeholder="Your Name" required>
+    <input type="email" name="email" placeholder="Your Email" required>
+    <textarea name="message" placeholder="Your Message" required></textarea>
+    <button type="submit">Submit</button>
+  </form>
+
+  <script>
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzPTeV2VXF5ezWHfkYirHLKNsOzqH4Oxy6nypZM2zPZGIoQ9idzpYEbOqMQ23NfhYNo_Q/exec'; // Replace with your Web App URL
+
+    document.getElementById('contact-form').addEventListener('submit', function(e) {
+      e.preventDefault();
+
+      const formData = {
+        name: this.name.value,
+        email: this.email.value,
+        message: this.message.value
+      };
+
+      fetch(scriptURL, {
+        method: 'POST',
+        body: JSON.stringify(formData),
+        headers: {
+          'Content-Type': 'application/json'
+        }
+      })
+      .then(res => res.json())
+      .then(response => {
+        alert("Form submitted successfully!");
+        this.reset();
+      })
+      .catch(error => {
+        console.error('Error!', error.message);
+      });
+    });
+  </script>
+
+</body>
+</html>
