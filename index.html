@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact Form</title>
 </head>
 <body>
   <form id="contact-form">
-    <input type="text" name="name" placeholder="Your Name" required>
-    <input type="email" name="email" placeholder="Your Email" required>
+    <input type="text" name="name" placeholder="Your Name" required />
+    <input type="email" name="email" placeholder="Your Email" required />
     <textarea name="message" placeholder="Your Message" required></textarea>
     <button type="submit">Submit</button>
   </form>
 
   <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbyj8H8TwSPhNnvdtjBqf_C_vMXqJomT1yPIVCftawTRVDKWN4td08PbZ4BXZ2TtzNVC5A/exec';
+    const scriptURL = 'https://script.google.com/macros/s/AKfycbzZAvQLlPovSMonGisdCEk1gqbuQSO3o2FCY-mczYfJSWJmxTJ_hhVEH8Xm0mfyoB7usQ/exec';
 
     document.getElementById('contact-form').addEventListener('submit', function(e) {
       e.preventDefault();
 
-      const form = document.getElementById('contact-form');
+      const form = e.target;
       const formData = new FormData(form);
 
       fetch(scriptURL, {
         method: 'POST',
+        mode: 'cors',
         body: formData
       })
       .then(response => response.json())
