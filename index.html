@@ -3,40 +3,666 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Contact Form</title>
+  <title>Smooth Quiz Transition</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body, html {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      font-family: sans-serif;
+    }
+    /* Common */
+    #quizForm {
+      width: 100%;
+      height: 100vh;
+      overflow: hidden;
+      position: relative;
+    }
+    .screens-wrapper {
+      display: flex;
+      height: 100%;
+      transition: transform 0.5s ease-in-out;
+    }
+    .screen {
+      width: 100vw; /* Fix: use viewport width */
+      flex-shrink: 0;
+      height: 100%;
+      padding: 20px;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .screen-inner__wrapper {
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      width: 100%;
+    }
+    .quiz-caption {
+      font-size: 16px;
+      font-weight: 400;
+      margin-bottom: 32px;
+    }
+    .quiz-main__title {
+      font-size: 35px;
+      line-height: 42px;
+      margin-bottom: 32px;
+    }
+    .quiz-main__description {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 1;
+      margin-bottom: 32px;
+    }
+    .quiz-btn__wrapper .quiz-caption {
+      margin-bottom: 16px;
+    }
+    .screen-inner__wrapper .button {
+      font-size: 16px;
+      font-weight: 700;
+      border: 1px solid;
+      border-radius: 8px;
+      cursor: pointer;
+      padding: 16px 55px;
+      margin-top: 0px;
+    }
+    .screen-inner__wrapper .button.button-primary {
+      background-color: #000000;
+      color: #ffffff;
+    }
+    .quiz-item__bottom {
+      max-width: 850px;
+      margin: 0 auto;
+    }
+    .hidden { display: none; }
+
+
+    /* Screen 1 */
+    .screen-single__top {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    .screen-inner__wrapper .start-btn {
+      background-color: #DBE7FF;
+    }
+    img.get-started-image {
+      width: 50%;
+    }
+
+    /* Screen two to last common */
+    .quiz-item__header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      padding-top: 40px;
+    }
+    .quiz-item__header .back {
+      position: absolute;
+      left: 0px;
+      top: 5px;
+      background-color: transparent;
+      padding: 0px;
+      border: none;
+      cursor: pointer;
+      margin: 0px;
+    }
+    .quiz-item__nums {
+      display: inline-block;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+      margin-bottom: 32px;
+    }
+    .quiz-item__answer-group {
+      display: grid;
+      border: 1px solid transparent;
+      gap: 20px;
+      margin-bottom: 32px;
+      padding-bottom: 10px;
+    }
+    .quiz-item__answer-group.quiz-item__image-btn {
+      max-width: 510px;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+    .quiz-item__answer-group.quiz-item__text-btn {
+      max-width: 470px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+    .quiz-item__answer-box {
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      position: relative;
+      background-color: transparent;
+      border: 0;
+      border-radius: 0px;
+      transition: background-color 0.5s;
+    }
+    .quiz-item__answer-box input {
+      position: absolute;
+      top: 0;
+      left: 0;
+      bottom: 0;
+      right: 0;
+      height: 100%;
+      width: 100%;
+      opacity: 0;
+      display: block;
+      cursor: pointer;
+      z-index: 100;
+    }
+    .quiz-item__checkmark {
+      position: absolute;
+      top: 10px;
+      right: 8px;
+      height: 20px;
+      width: 20px;
+      transform: scale(0);
+      opacity: 0;
+      transition: .5s cubic-bezier(.91,-.5,.21,1.35);
+      z-index: 10;
+    }
+    .quiz-item__answer-box input:checked~.quiz-item__checkmark {
+      opacity: 1;
+      transform: scale(.95);
+    }
+    .quiz-item__img {
+      display: block;
+      width: 100%;
+      height: 150px;
+      object-fit: cover;
+      margin-bottom: .5rem;
+      border: 1px solid;
+      border-radius: .25rem;
+      transition: .5s;
+    }
+    .quiz-item__answer-box:hover .quiz-item__img {
+      transform: scale(0.98);
+    }
+
+
+    /* Screen two */
+    #screen2 .quiz-main__title {margin-bottom: 8px;}
+    #screen2 .start-btn {
+      margin-bottom: 32px;
+    }
+
+    /* Screen four */
+    .quiz-item__answer-box.btn_type_primary {
+      padding: 12px 30px 12px 16px;
+      justify-content: center;
+      border: 1px solid #A3A3A3;
+      border-radius: 5px;
+      background-color: #F9F7F3;
+    }
+    .quiz-item__answer-box.btn_type_primary .quiz-item__checkmark {
+      top: 50%;
+      transform: translateY(-50%);
+    }
+    .quiz-item__answer-box.btn_type_primary input:checked ~ .quiz-item__checkmark {
+      transform: translateY(-50%) scale(0.95);
+    }
+    .quiz-item__answer-box.btn_type_primary:hover {
+      background-color: #000000;
+      color: #ffffff;
+    }
+
+    /* Screen 5 */
+    .klaviyo_form {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+    }
+
+    input#klaviyoEmail {
+      width: 260px;
+      font-size: 14px;
+      padding: 15px 15px;
+      border: 1px solid #A3A3A3;
+      border-radius: 8px;
+    }
+
+    .klaviyo_form .button {
+      width: 260px;
+      background-color: #000000;
+      color: #ffffff;
+    }
+
+    #skipDiscountBtn {
+      font-size: 16;
+      text-decoration: underline;
+      padding: 0;
+      background-color: transparent;
+      border: 0;
+      margin-top: 20px;
+      cursor: pointer;
+    }
+
+    .quiz-item__success-message {
+      width: 70%;
+      margin: 0 auto;
+    }
+
+    .quiz-item__success-message img {
+      max-width: 100%;
+    }
+    .quiz-item__success-message .giftbox-open {
+      width: 70%;
+    }
+
+    .quiz-code {
+      width: 250px;
+      margin: 0 auto;
+      padding: 15px;
+      border: 1px dashed #A3A3A3;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    div#copyCodeSection .quiz-caption {
+      margin-top: 20px;
+    }
+
+    /* Screen 6 */
+    .circle-loader {
+      width: 150px;
+      height: 150px;
+      border-radius: 50%;
+      background: conic-gradient(#007bff var(--progress, 0%), #eee 0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      font-weight: bold;
+      margin: auto;
+    }
+  </style>
 </head>
 <body>
-  <form id="contact-form">
-    <input type="text" name="name" placeholder="Your Name" required />
-    <input type="email" name="email" placeholder="Your Email" required />
-    <textarea name="message" placeholder="Your Message" required></textarea>
-    <button type="submit">Submit</button>
-  </form>
 
+<form id="quizForm">
+  <div class="screens-wrapper" id="screensWrapper">
+
+    <!-- Screen 1 Get Starter -->
+    <div class="screen" id="screen1">
+      <div class="screen-inner__wrapper">
+        <div class="screen-single__top">
+          <p class="quiz-caption">No Guesswork. Backed by Results.</p>
+          <h1 class="quiz-main__title">Find Your Perfect Skin Fix</h1>
+          <p class="quiz-main__description">Just answer 3 questions. We’ll match you with the right concealing gel + give you 30% off to try.</p>
+          <div class="quiz-btn__wrapper">
+            <p class="quiz-caption">Got 30 seconds?</p>
+            <button type="button" class="button start-btn" onclick="goToScreen(1)">Let's Start</button>
+          </div>
+        </div>
+        <div class="quiz-item__bottom">
+          <img class="get-started-image" src="https://cdn.shopify.com/s/files/1/0646/9002/8680/files/Toilettas_Black_Alpha_Skin.png?v=1748744996" alt="Get Started">
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 2 - First options -->
+    <div class="screen" id="screen2">
+      <div class="screen-inner__wrapper">
+        <div class="quiz-item__header">
+          <button type="button" class="back" onclick="goToScreen(0)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="13" viewBox="0 0 18 13" fill="none">
+              <path d="M1.43597 6.08189H16.5588" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6.47694 11.1228L1.436 6.0819L6.47694 1.04095" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="quiz-item__container">
+            <span class="quiz-item__nums">1 of 3</span>
+            <h2 class="quiz-main__title">What is your main concern?</h2>
+            <p class="quiz-main__description">You can select multiple</p>
+          </div>
+        </div>
+        <div class="quiz-item__bottom">
+          <fieldset class="options quiz-item__answer-group quiz-item__image-btn">
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="acne_blemishes_main_concern">
+              <input type="checkbox" id="acne_blemishes_main_concern" name="Main_Concern[]" value="Acne / Blemishes">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Acne / Blemishes</div>
+            </label>
+
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="dark_circles_main_concern">
+              <input type="checkbox" id="dark_circles_main_concern" name="Main_Concern[]" value="Dark Circles">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Dark Circles</div>
+            </label>
+
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="pigmentation_main_concern">
+              <input type="checkbox" id="pigmentation_main_concern" name="Main_Concern[]" value="Pigmentation">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" width="52" height="52" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Pigmentation</div>
+            </label>
+
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="general_dullness_main_concern">
+              <input type="checkbox" id="general_dullness_main_concern" name="Main_Concern[]" value="General Dullness">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" width="52" height="52" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">General Dullness</div>
+            </label>
+
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="scars_main_concern">
+              <input type="checkbox" id="scars_main_concern" name="Main_Concern[]" value="Scars">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" width="52" height="52" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Scars</div>
+            </label>
+
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="red_skin_main_concern">
+              <input type="checkbox" id="red_skin_main_concern" name="Main_Concern[]" value="Red Skin">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" width="52" height="52" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Red Skin</div>
+            </label>
+
+            <!-- <div class="option"><input type="checkbox" id="opt2" name="screen2[]" value="opt2"><label for="opt2">Option 2</label></div> -->
+
+          </fieldset>
+          <button type="button" class="button start-btn hidden" id="next2" onclick="goToScreen(2)">Next Question</button>
+          <div class="quiz-item__bottom-caption">Hide it like it was never there.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Screen 3 - Second options -->
+    <div class="screen" id="screen3">
+      <div class="screen-inner__wrapper">
+        <div class="quiz-item__header">
+          <button type="button" class="back" onclick="goToScreen(1)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="13" viewBox="0 0 18 13" fill="none">
+              <path d="M1.43597 6.08189H16.5588" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6.47694 11.1228L1.436 6.0819L6.47694 1.04095" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="quiz-item__container">
+            <span class="quiz-item__nums">2 of 3</span>
+            <h2 class="quiz-main__title">Which resembles your skin best?</h2>
+            <!-- <p class="quiz-main__description">You can select multiple</p> -->
+          </div>
+        </div>
+        <div class="quiz-item__bottom">
+          <fieldset class="options quiz-item__answer-group quiz-item__image-btn">
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="which_resembles_light">
+              <input type="radio" id="which_resembles_light" name="Which_Resembles[]" value="Light">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Light</div>
+            </label>
   
-  <script>
-    const scriptURL = 'https://script.google.com/macros/s/AKfycbxO8pVRUBQJRYuEO1-govRTBqdu5Syvsm93hHIvSEHvJoC7eVpHHohyRy2UvDcIrlCesg/exec';
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="which_resembles_light_medium">
+              <input type="radio" id="which_resembles_light_medium" name="Which_Resembles[]" value="Light / Medium">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Light / Medium</div>
+            </label>
+  
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="which_resembles_medium_fair">
+              <input type="radio" id="which_resembles_medium_fair" name="Which_Resembles[]" value="Medium / Fair">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" width="52" height="52" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Medium / Fair</div>
+            </label>
+  
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="which_resembles_medium">
+              <input type="radio" id="which_resembles_medium" name="Which_Resembles[]" value="Medium">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" width="52" height="52" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Medium</div>
+            </label>
+  
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="which_resembles_medium_dark">
+              <input type="radio" id="which_resembles_medium_dark" name="Which_Resembles[]" value="Medium / Dark">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" width="52" height="52" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Medium / Dark</div>
+            </label>
+  
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_secondary" for="which_resembles_dark">
+              <input type="radio" id="which_resembles_dark" name="Which_Resembles[]" value="Dark">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <img src="//www.luminskin.com/cdn/shop/t/1903/assets/placeholder.jpg?v=86653708540640979041748501463" alt="Quiz item placeholder" width="52" height="52" class="quiz-item__img" loading="lazy">
+              <div class="quiz-item__answer">Dark</div>
+            </label>
+          </fieldset>
+          <div class="quiz-item__bottom-caption">Your shade, no guesswork.</div>
+        </div>
+        <!-- <div class="options">
+          <div class="option"><input type="radio" id="r1" name="screen3" value="r1"><label for="r1">Option A</label></div>
+          <div class="option"><input type="radio" id="r2" name="screen3" value="r2"><label for="r2">Option B</label></div>
+        </div> -->
+      </div>
+    </div>
 
-    document.getElementById('contact-form').addEventListener('submit', function(e) {
-      e.preventDefault();
+    <!-- Screen 4 - Third options -->
+    <div class="screen" id="screen4">
+      <div class="screen-inner__wrapper">
+        <div class="quiz-item__header">
+          <button type="button" class="back" onclick="goToScreen(2)">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="13" viewBox="0 0 18 13" fill="none">
+              <path d="M1.43597 6.08189H16.5588" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M6.47694 11.1228L1.436 6.0819L6.47694 1.04095" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+          <div class="quiz-item__container">
+            <span class="quiz-item__nums">3 of 3</span>
+            <h2 class="quiz-main__title">How important is it to fix this skin issue right now?</h2>
+          </div>
+        </div>
+        <div class="quiz-item__bottom">
+          <fieldset class="options quiz-item__answer-group quiz-item__text-btn">
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_primary" for="how_important_very">
+              <input type="radio" id="how_important_very" name="How_Important[]" value="Very — I want a fast, effective fix">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div class="quiz-item__answer">Very — I want a fast, effective fix</div>
+            </label>
+  
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_primary" for="how_important_important">
+              <input type="radio" id="how_important_important" name="How_Important[]" value="Important, I’m exploring options">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div class="quiz-item__answer">Important, I’m exploring options</div>
+            </label>
+  
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_primary" for="how_important_curious">
+              <input type="radio" id="how_important_curious" name="How_Important[]" value="Just curious - checking what’s there">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div class="quiz-item__answer">Just curious - checking what’s there</div>
+            </label>
+  
+            <label class="quiz-item__answer-box quiz-item__btn btn_type_primary" for="how_important_not_sure">
+              <input type="radio" id="how_important_not_sure" name="How_Important[]" value="Not Sure">
+              <svg class="quiz-item__checkmark icon icon-checkmark" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none">
+                <circle cx="12" cy="12" r="11" fill="#DBE7FF" stroke="black" stroke-width="2"/>
+                <path d="M6.60461 12L10.2016 15.597L17.3954 8.40308" stroke="black" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <div class="quiz-item__answer">Not sure</div>
+            </label>
+  
+          </fieldset>
+          <div class="quiz-item__bottom-caption">Fast fix, zero fuss.</div>
+        </div>
+        <!-- <div class="options">
+          <div class="option"><input type="radio" id="s4a" name="screen4" value="a"><label for="s4a">Option 1</label></div>
+          <div class="option"><input type="radio" id="s4b" name="screen4" value="b"><label for="s4b">Option 2</label></div>
+          <div class="option"><input type="radio" id="s4c" name="screen4" value="c"><label for="s4c">Option 3</label></div>
+          <div class="option"><input type="radio" id="s4d" name="screen4" value="d"><label for="s4d">Option 4</label></div>
+        </div> -->
+      </div>
+    </div>
 
-      const form = e.target;
-      const formData = new FormData(form);
+    <!-- Screen 5 - klaviyo and submit buttons -->
+    <div class="screen" id="screen5">
+      <div class="screen-inner__wrapper">
+        <div class="quiz-item__header">
+          <div class="quiz-item__header-before">
+            <button type="button" class="back" onclick="goToScreen(3)">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="13" viewBox="0 0 18 13" fill="none">
+                <path d="M1.43597 6.08189H16.5588" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M6.47694 11.1228L1.436 6.0819L6.47694 1.04095" stroke="black" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg> 
+            </button>
+            <div class="quiz-item__container">
+              <span class="quiz-item__nums">Bonus</span>
+              <h2 class="quiz-main__title">Enter email to get 10% discount code + get your results</h2>
+            </div>
+          </div>
+          <div class="quid-item__header-after hidden">
+            <h2 class="quiz-main__title">Your 10% discount is ready 🎉</h2>
+          </div>
+        </div>
+        <div class="quiz-item__bottom">
+          <div id="klaviyoSection">
+            <div class="klaviyo_form">
+              <input type="email" placeholder="Enter your email" id="klaviyoEmail" />
+              <button type="button" class="button button-primary" onclick="claimDiscount()">Claim Discount</button>
+            </div>
+            <button type="button" id="skipDiscountBtn" class="btn" onclick="submitForm()">Get result without discount</button>
+          </div>
+          <div id="copyCodeSection" class="hidden">
+            <div class="quiz-code">JK283K</div>
+            <button type="button" id="copyAndGetResultBtn" class="button button-primary" onclick="copyCodeAndSubmit()">Copy code and get Result</button>
+            <div class="quiz-caption">Your discount will be automatically applied in the checkout.</div>
+          </div>
+          <div class="quiz-item__success-message">
+            <img class="giftbox-box" src="https://cdn.shopify.com/s/files/1/0646/9002/8680/files/giftbox-box.png?v=1748750025" alt="">
+            <img class="giftbox-open hidden" src="https://cdn.shopify.com/s/files/1/0646/9002/8680/files/giftbox-open.png?v=1748750024" alt="">
+          </div>
+        </div>
+      </div>
+    </div>
 
-      fetch(scriptURL, {
-        method: 'POST',
-        mode: 'cors',
-        body: formData
-      })
-      .then(response => response.json())
-      .then(data => {
-        alert("Form submitted successfully!");
-        form.reset();
-      })
-      .catch(error => {
-        console.error('Error!', error.message);
-      });
+    <!-- Screen 6 (Loading) -->
+    <div class="screen" id="screen6">
+      <div class="screen-inner__wrapper">
+        <div class="quiz-item__header">
+          <div class="circle-loader" id="progressLoader">0%</div>
+          <p class="quiz-main__title">Finding the best solution tailored for you!</p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</form>
+
+
+<script>
+
+  // On DOM load, set wrapper width based on child count
+  window.addEventListener('DOMContentLoaded', () => {
+    const wrapper = document.getElementById("screensWrapper");
+    const screens = wrapper.querySelectorAll(".screen");
+    wrapper.style.width = `${screens.length * 100}vw`; // width in vw
+  });
+
+  let currentScreen = 0;
+
+  function goToScreen(index) {
+    const wrapper = document.getElementById("screensWrapper");
+    wrapper.style.transform = `translateX(-${index * 100}vw)`;
+    currentScreen = index;
+  }
+
+  document.querySelectorAll('#screen2 input[type="checkbox"]').forEach(input => {
+    input.addEventListener('change', () => {
+      const anyChecked = Array.from(document.querySelectorAll('#screen2 input[type="checkbox"]')).some(cb => cb.checked);
+      document.getElementById("next2").classList.toggle("hidden", !anyChecked);
     });
-  </script>
+  });
+
+  document.querySelectorAll('#screen3 input[type="radio"]').forEach(input => {
+    input.addEventListener('change', () => goToScreen(3));
+  });
+
+  document.querySelectorAll('#screen4 input[type="radio"]').forEach(input => {
+    input.addEventListener('change', () => goToScreen(4));
+  });
+
+  function claimDiscount() {
+    document.querySelector(".quiz-item__header-before").classList.add("hidden");
+    document.querySelector(".quid-item__header-after").classList.remove("hidden");
+    document.getElementById("klaviyoSection").classList.add("hidden");
+    document.getElementById("copyCodeSection").classList.remove("hidden");
+    document.querySelector(".giftbox-box").classList.add("hidden");
+    document.querySelector(".giftbox-open").classList.remove("hidden");
+  }
+
+  function copyCodeAndSubmit() {
+    navigator.clipboard.writeText("JK283K").then(() => {
+      submitForm();
+    });
+  }
+
+  function submitForm() {
+    goToScreen(5);
+    let percent = 0;
+    const loader = document.getElementById("progressLoader");
+    const interval = setInterval(() => {
+      percent += 2;
+      loader.style.setProperty('--progress', percent + '%');
+      loader.textContent = percent + '%';
+      if (percent >= 100) {
+        clearInterval(interval);
+        window.location.href = "https://example.com/result";
+      }
+    }, 60);
+  }
+</script>
+
 </body>
 </html>
