@@ -295,7 +295,7 @@
     }
     .ring-progress {
       fill: none;
-      stroke: #007bff;
+      stroke: #000000;
       stroke-width: 10;
       stroke-linecap: round;
       stroke-dasharray: 440; /* Circumference: 2πr ≈ 2*3.14*70 */
@@ -753,6 +753,7 @@
 
   function submitForm() {
     goToScreen(5); // Show loading screen 
+    let redirect = false;
 
     // 1️⃣ Gather quiz data
     const screen2Selections = Array.from(document.querySelectorAll('#screen2 input[type="checkbox"]:checked'))
@@ -779,11 +780,31 @@
     })
     .then(response => {
       console.log("Quiz data submitted successfully.");
-      progressLoading();
+      redirect = true;
     })
     .catch(error => {
       console.error("Error submitting quiz data!", error.message);
     });
+
+    let percent = 0;
+    const text = document.getElementById("progressText");
+    const ring = document.querySelector(".ring-progress");
+    const radius = 70;
+    const circumference = 2 * Math.PI * radius;
+
+    const interval = setInterval(() => {
+      percent += 2;
+      if (percent > 100) percent = 100;
+
+      const offset = circumference - (percent / 100) * circumference;
+      ring.style.strokeDashoffset = offset;
+      text.textContent = percent + "%";
+
+      if (percent >= 100 && redirect) {
+        clearInterval(interval);
+        window.location.href = "https://example.com/result";
+      }
+    }, 60);
   }
 
 </script>
