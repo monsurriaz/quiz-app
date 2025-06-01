@@ -53,7 +53,7 @@
     .quiz-main__description {
       font-size: 16px;
       font-weight: 400;
-      line-height: 1;
+      line-height: 24px;
       margin-bottom: 32px;
     }
     .quiz-btn__wrapper .quiz-caption {
@@ -73,6 +73,7 @@
       color: #ffffff;
     }
     .quiz-item__bottom {
+      width: 100%;
       max-width: 850px;
       margin: 0 auto;
     }
@@ -235,7 +236,7 @@
     }
 
     #skipDiscountBtn {
-      font-size: 16;
+      font-size: 16px;
       text-decoration: underline;
       padding: 0;
       background-color: transparent;
@@ -281,6 +282,50 @@
       font-size: 1.5rem;
       font-weight: bold;
       margin: auto;
+    }
+
+    /* Mobile */
+    @media screen and (max-width: 767px) {
+      /* Common */
+      .screen {
+        padding: 32px 20px;
+      }
+      .screen-inner__wrapper {
+        overflow-y: auto;
+      }
+      .quiz-item__header {
+        padding-top: 30px;
+      }
+      .quiz-main__title {
+        font-size: 24px;
+        line-height: 1.3;
+      }
+      .quiz-item__answer-group.quiz-item__image-btn {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+      .start-btn,
+      .button.button-primary, 
+      #skipDiscountBtn, 
+      .btn, .quiz-code, input#klaviyoEmail {
+        width: 90%;
+      }
+
+      /* Screen 1 */
+      .screen-single__top {
+        align-items: normal;
+      }
+      img.get-started-image {
+        width: 85%;
+      }
+
+      /* screen 6 */
+      .quiz-item__success-message {
+        width: 100%;
+      }
+      .quiz-item__success-message .giftbox-open {
+        width: 90%;
+      }
+
     }
   </style>
 </head>
