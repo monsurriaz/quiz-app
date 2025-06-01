@@ -39,6 +39,7 @@
       flex-direction: column;
       text-align: center;
       width: 100%;
+      overflow-y: auto;
     }
     .quiz-caption {
       font-size: 16px;
@@ -73,7 +74,6 @@
       color: #ffffff;
     }
     .quiz-item__bottom {
-      width: 100%;
       max-width: 850px;
       margin: 0 auto;
     }
@@ -256,6 +256,14 @@
     .quiz-item__success-message .giftbox-open {
       width: 70%;
     }
+    .quid-item__header-after {
+      text-align: center;
+    }
+    .screen .store_logo {
+      height: 16px;
+      width: auto;
+      margin-bottom: 80px;
+    }
 
     .quiz-code {
       width: 250px;
@@ -271,17 +279,40 @@
     }
 
     /* Screen 6 */
-    .circle-loader {
+    .circle-wrapper {
+      position: relative;
       width: 150px;
       height: 150px;
-      border-radius: 50%;
-      background: conic-gradient(#007bff var(--progress, 0%), #eee 0);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      margin: auto;
+    }
+    .progress-ring {
+      transform: rotate(-90deg);
+    }
+    .ring-bg {
+      fill: none;
+      stroke: #eee;
+      stroke-width: 10;
+    }
+    .ring-progress {
+      fill: none;
+      stroke: #007bff;
+      stroke-width: 10;
+      stroke-linecap: round;
+      stroke-dasharray: 440; /* Circumference: 2πr ≈ 2*3.14*70 */
+      stroke-dashoffset: 440; /* Start fully hidden */
+      transition: stroke-dashoffset 0.3s linear;
+    }
+    .progress-text {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       font-size: 1.5rem;
       font-weight: bold;
-      margin: auto;
+    }
+    p.quiz-main__title {
+      margin-top: 32px;
+      margin-bottom: 0px;
     }
 
     /* Mobile */
@@ -299,6 +330,9 @@
       .quiz-main__title {
         font-size: 24px;
         line-height: 1.3;
+      }
+      .quiz-item__bottom {
+        width: 100%;
       }
       .quiz-item__answer-group.quiz-item__image-btn {
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -430,8 +464,6 @@
               <div class="quiz-item__answer">Red Skin</div>
             </label>
 
-            <!-- <div class="option"><input type="checkbox" id="opt2" name="screen2[]" value="opt2"><label for="opt2">Option 2</label></div> -->
-
           </fieldset>
           <button type="button" class="button start-btn hidden" id="next2" onclick="goToScreen(2)">Next Question</button>
           <div class="quiz-item__bottom-caption">Hide it like it was never there.</div>
@@ -519,10 +551,6 @@
           </fieldset>
           <div class="quiz-item__bottom-caption">Your shade, no guesswork.</div>
         </div>
-        <!-- <div class="options">
-          <div class="option"><input type="radio" id="r1" name="screen3" value="r1"><label for="r1">Option A</label></div>
-          <div class="option"><input type="radio" id="r2" name="screen3" value="r2"><label for="r2">Option B</label></div>
-        </div> -->
       </div>
     </div>
 
@@ -582,12 +610,6 @@
           </fieldset>
           <div class="quiz-item__bottom-caption">Fast fix, zero fuss.</div>
         </div>
-        <!-- <div class="options">
-          <div class="option"><input type="radio" id="s4a" name="screen4" value="a"><label for="s4a">Option 1</label></div>
-          <div class="option"><input type="radio" id="s4b" name="screen4" value="b"><label for="s4b">Option 2</label></div>
-          <div class="option"><input type="radio" id="s4c" name="screen4" value="c"><label for="s4c">Option 3</label></div>
-          <div class="option"><input type="radio" id="s4d" name="screen4" value="d"><label for="s4d">Option 4</label></div>
-        </div> -->
       </div>
     </div>
 
@@ -607,7 +629,8 @@
               <h2 class="quiz-main__title">Enter email to get 10% discount code + get your results</h2>
             </div>
           </div>
-          <div class="quid-item__header-after hidden">
+          <div class="quiz-item__header-after hidden">
+            <img src="https://cdn.shopify.com/s/files/1/0646/9002/8680/files/store-logo.png?v=1748764116" alt="store logo" class="store_logo">
             <h2 class="quiz-main__title">Your 10% discount is ready 🎉</h2>
           </div>
         </div>
@@ -636,7 +659,14 @@
     <div class="screen" id="screen6">
       <div class="screen-inner__wrapper">
         <div class="quiz-item__header">
-          <div class="circle-loader" id="progressLoader">0%</div>
+          <img src="https://cdn.shopify.com/s/files/1/0646/9002/8680/files/store-logo.png?v=1748764116" alt="" class="store_logo">
+          <div class="circle-wrapper">
+            <svg class="progress-ring" width="150" height="150">
+              <circle class="ring-bg" cx="75" cy="75" r="70" />
+              <circle class="ring-progress" cx="75" cy="75" r="70" />
+            </svg>
+            <div class="progress-text" id="progressText">0%</div>
+          </div>
           <p class="quiz-main__title">Finding the best solution tailored for you!</p>
         </div>
       </div>
@@ -647,6 +677,7 @@
 
 
 <script>
+  const scriptURL = 'https://script.google.com/macros/s/AKfycbx5v4ccXEDoOzIGVSxv4gSg-HjfbXIHRNo3ubm3F4uqoKUH9X4sC476INTdswcDNVntpA/exec';
 
   // On DOM load, set wrapper width based on child count
   window.addEventListener('DOMContentLoaded', () => {
@@ -659,8 +690,13 @@
 
   function goToScreen(index) {
     const wrapper = document.getElementById("screensWrapper");
-    wrapper.style.transform = `translateX(-${index * 100}vw)`;
-    currentScreen = index;
+    let delay = 0;
+    if (index > 2) delay = 400;
+
+    setTimeout(() => {
+      wrapper.style.transform = `translateX(-${index * 100}vw)`;
+      currentScreen = index;
+    }, delay);
   }
 
   document.querySelectorAll('#screen2 input[type="checkbox"]').forEach(input => {
@@ -680,7 +716,7 @@
 
   function claimDiscount() {
     document.querySelector(".quiz-item__header-before").classList.add("hidden");
-    document.querySelector(".quid-item__header-after").classList.remove("hidden");
+    document.querySelector(".quiz-item__header-after").classList.remove("hidden");
     document.getElementById("klaviyoSection").classList.add("hidden");
     document.getElementById("copyCodeSection").classList.remove("hidden");
     document.querySelector(".giftbox-box").classList.add("hidden");
@@ -693,20 +729,63 @@
     });
   }
 
-  function submitForm() {
-    goToScreen(5);
+  function progressLoading() {
     let percent = 0;
-    const loader = document.getElementById("progressLoader");
+    const text = document.getElementById("progressText");
+    const ring = document.querySelector(".ring-progress");
+    const radius = 70;
+    const circumference = 2 * Math.PI * radius;
+
     const interval = setInterval(() => {
       percent += 2;
-      loader.style.setProperty('--progress', percent + '%');
-      loader.textContent = percent + '%';
+      if (percent > 100) percent = 100;
+
+      const offset = circumference - (percent / 100) * circumference;
+      ring.style.strokeDashoffset = offset;
+      text.textContent = percent + "%";
+
       if (percent >= 100) {
         clearInterval(interval);
         window.location.href = "https://example.com/result";
       }
     }, 60);
   }
+
+  function submitForm() {
+    goToScreen(5); // Show loading screen 
+
+    // 1️⃣ Gather quiz data
+    const screen2Selections = Array.from(document.querySelectorAll('#screen2 input[type="checkbox"]:checked'))
+      .map(cb => cb.value).join(', ');
+
+    const screen3Selection = document.querySelector('#screen3 input[type="radio"]:checked')?.value || '';
+    const screen4Selection = document.querySelector('#screen4 input[type="radio"]:checked')?.value || '';
+
+    const claimedDiscount = !document.querySelector(".quid-item__header-after")?.classList.contains("hidden");
+    const discountCode = claimedDiscount ? "JK283K" : "Not Claimed";
+
+    const quizData = new FormData();
+    quizData.append("Question 1", screen2Selections);
+    quizData.append("Question 2", screen3Selection);
+    quizData.append("Question 3", screen4Selection);
+    quizData.append("Discount Claimed", claimedDiscount ? "Yes" : "No");
+    quizData.append("Discount Code", discountCode);
+
+    // 2️⃣ Submit to Google Sheet
+    fetch(scriptURL, {
+      method: 'POST',
+      mode: 'cors',
+      body: quizData
+    })
+    .then(response => {
+      console.log("Quiz data submitted successfully.");
+      progressLoading();
+    })
+    .catch(error => {
+      console.error("Error submitting quiz data!", error.message);
+    });
+  }
+
 </script>
 
 </body>
